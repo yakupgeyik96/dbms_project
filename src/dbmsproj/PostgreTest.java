@@ -14,7 +14,7 @@ public class PostgreTest {
         try (Connection conn = postgreSqlConnection.getConnection();
             Statement stmt = conn.createStatement())
         {
-            ResultSet result = stmt.executeQuery("SELECT * FROM deneme2 WHERE id=1");
+            /*ResultSet result = stmt.executeQuery("SELECT * FROM deneme2 WHERE id=1");
 
             ArrayList<Date> localDates = new ArrayList<>();
 
@@ -35,9 +35,9 @@ public class PostgreTest {
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH) + 1,
                     calendar.get(Calendar.DAY_OF_MONTH)
-            );
+            );*/
 
-            System.out.println(localDate);
+            //System.out.println(localDate);
 
             /*for (int i = 0; i < dates.size(); i++) {
                 localDates[i] = dates.get(i);

@@ -1,15 +1,13 @@
 package dbmsproj.controller;
 
 import dbmsproj.service.SectionDao;
+import dbmsproj.service.TenantDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -32,18 +30,47 @@ public class MainPageController implements Initializable {
     private TextField textFieldTC;
 
     @FXML
+    private TextField textSignupTC;
+
+    @FXML
+    private TextField textFieldSignupFirstName;
+
+    @FXML
+    private TextField textFieldSignupLastName;
+
+    @FXML
+    private TextField textFieldSignupPhoneNumber;
+
+    @FXML
     void onSelectSectionClick(ActionEvent event) {
 
-        LocalDate[] localDates = new LocalDate[takenDays.size()];
+        //DB function get_unreserved_stands()
 
-        for (int i = 0; i < takenDays.size(); i++) {
-            localDates[i] = takenDays.get(i);
-        }
+        SectionDao sectionDao = new SectionDao();
 
-        String section = comboBoxSelectSection.getValue();
+        sectionDao.getUnreservedStands(
+                comboBoxSelectSection.getValue(),
+                takenDays.get(0),
+                takenDays.get(takenDays.size() - 1)
+        );
 
-        System.out.println("Section: " + section);
-        System.out.println("Dates: " + Arrays.toString(localDates));
+        /*ArrayList<LocalDate> localDates =
+                (ArrayList<LocalDate>) sectionDao.getSectionReservedDays(comboBoxSelectSection.getValue());
+
+        for (LocalDate localDate : localDates) {
+            System.out.println("---> " + localDate);
+        }*/
+
+//        LocalDate[] localDates = new LocalDate[takenDays.size()];
+//
+//        for (int i = 0; i < takenDays.size(); i++) {
+//            localDates[i] = takenDays.get(i);
+//        }
+//
+//        String section = comboBoxSelectSection.getValue();
+//
+//        System.out.println("Section: " + section);
+//        System.out.println("Dates: " + Arrays.toString(localDates));
     }
 
     @FXML
@@ -54,9 +81,47 @@ public class MainPageController implements Initializable {
 
     @FXML
     void onQueryTCNumber(ActionEvent event) {
-        String tcNumber = textFieldTC.getText();
-        if(tcNumber.equals("21835902314")) {
-            setReservationComponents(false);
+        TenantDAO tenantDAO = new TenantDAO();
+        List<String> tcNumbers = tenantDAO.getTenantTCNumbers();
+
+        for(String tcNumber : tcNumbers) {
+            if(tcNumber.equals(textFieldTC.getText())) {
+                setReservationComponents(false);
+            }
+        }
+    }
+
+    @FXML
+    void signupButtonClicked(ActionEvent event) {
+        TenantDAO tenantDAO = new TenantDAO();
+
+        String firstName = textFieldSignupFirstName.getText();
+        String lastName = textFieldSignupLastName.getText();
+        String tcNumber = textSignupTC.getText();
+        String phoneNumber = textFieldSignupPhoneNumber.getText();
+
+        boolean result = tenantDAO.signupUser(firstName, lastName, phoneNumber, tcNumber);
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+        if (result) {
+            alert.setTitle("Üyelik Bilgilendirme");
+            alert.setHeaderText("Üyelik Tamamlandı.");
+            alert.showAndWait().ifPresent(rs -> {
+               if (rs == ButtonType.OK) {
+                   System.out.println("Pressed OK...");
+               }
+            });
+
+            clearSignupTextFields();
+        }
+        else {
+            alert.setHeaderText("Üyelik başarısız. Bilgilerinizi kontrol ediniz.");
+            alert.showAndWait().ifPresent(rs -> {
+                if (rs == ButtonType.CANCEL) {
+                    System.out.println("Canceled...");
+                }
+            });
         }
     }
 
@@ -65,8 +130,6 @@ public class MainPageController implements Initializable {
 
         takenDays = new ArrayList<>();
         setReservationComponents(true);
-
-
         getSections(); // get sections and set combobox values
     }
 
@@ -81,5 +144,12 @@ public class MainPageController implements Initializable {
         List<String> names = sectionDao.getSectionNames();
         ObservableList<String> sections = FXCollections.observableArrayList(names);
         comboBoxSelectSection.setItems(sections);
+    }
+
+    private void clearSignupTextFields() {
+        textFieldSignupFirstName.clear();
+        textFieldSignupLastName.clear();
+        textSignupTC.clear();
+        textFieldSignupPhoneNumber.clear();
     }
 }
