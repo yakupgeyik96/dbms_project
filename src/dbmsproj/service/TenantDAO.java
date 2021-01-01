@@ -58,4 +58,26 @@ public class TenantDAO {
 
         return false;
     }
+
+    public int getTenantNumberByTc(String tcNumber) {
+        PostgreSqlConnection postgreSqlConnection = PostgreSqlConnection.getInstance();
+        int tenantNumber = 0;
+
+        try (Connection conn = postgreSqlConnection.getConnection();
+             Statement stmt = conn.createStatement())
+        {
+            String sql = "SELECT tenantno FROM tenant WHERE tcno=?";
+            PreparedStatement prepStatement = conn.prepareStatement(sql);
+            prepStatement.setString(1, tcNumber);
+            ResultSet rs = prepStatement.executeQuery();
+            while (rs.next()) {
+                tenantNumber = rs.getInt(1);
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return tenantNumber;
+    }
 }

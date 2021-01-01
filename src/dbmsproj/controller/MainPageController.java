@@ -1,5 +1,9 @@
 package dbmsproj.controller;
 
+import dbmsproj.entity.ReservationForm;
+import dbmsproj.entity.Stand;
+import dbmsproj.service.ReservationFormDAO;
+import dbmsproj.service.ReservedDaysDAO;
 import dbmsproj.service.SectionDao;
 import dbmsproj.service.TenantDAO;
 import javafx.collections.FXCollections;
@@ -8,14 +12,17 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
 
 public class MainPageController implements Initializable {
-
+    Stand selectedStand;
     ArrayList<LocalDate> takenDays;
+    String tcNumber;
+    double standTotalPrice;
 
     @FXML
     private ComboBox<String> comboBoxSelectSection;
@@ -42,17 +49,26 @@ public class MainPageController implements Initializable {
     private TextField textFieldSignupPhoneNumber;
 
     @FXML
+    private ListView<Stand> unreservedStandsList;
+
+    @FXML
+    private Label totalStandPrice;
+
+    @FXML
     void onSelectSectionClick(ActionEvent event) {
-
-        //DB function get_unreserved_stands()
-
         SectionDao sectionDao = new SectionDao();
+        List<Stand> unreservedStands = new ArrayList<>();
 
-        sectionDao.getUnreservedStands(
+        unreservedStands = sectionDao.getUnreservedStands(
                 comboBoxSelectSection.getValue(),
                 takenDays.get(0),
                 takenDays.get(takenDays.size() - 1)
         );
+
+
+        ObservableList<Stand> stands = FXCollections.observableArrayList(unreservedStands);
+
+        unreservedStandsList.setItems(stands);
 
         /*ArrayList<LocalDate> localDates =
                 (ArrayList<LocalDate>) sectionDao.getSectionReservedDays(comboBoxSelectSection.getValue());
@@ -71,11 +87,23 @@ public class MainPageController implements Initializable {
 //
 //        System.out.println("Section: " + section);
 //        System.out.println("Dates: " + Arrays.toString(localDates));
+        System.out.println(takenDays.size());
     }
 
     @FXML
     void onDateAction(ActionEvent event) {
         LocalDate localDate = datePickerSelectSection.getValue();
+        for (LocalDate takenDay : takenDays) {
+            if ((takenDay.getYear() == localDate.getYear())
+                    && (takenDay.getMonth() == localDate.getMonth())
+                    && (takenDay.getDayOfMonth() == localDate.getDayOfMonth()))
+            {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setHeaderText("Aynı tarih eklenemez.");
+                return;
+            }
+        }
+
         takenDays.add(localDate);
     }
 
@@ -83,12 +111,28 @@ public class MainPageController implements Initializable {
     void onQueryTCNumber(ActionEvent event) {
         TenantDAO tenantDAO = new TenantDAO();
         List<String> tcNumbers = tenantDAO.getTenantTCNumbers();
+        tcNumber = textFieldTC.getText();
 
         for(String tcNumber : tcNumbers) {
             if(tcNumber.equals(textFieldTC.getText())) {
                 setReservationComponents(false);
+                return;
             }
         }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText("Lütfen üye olunuz.");
+        alert.showAndWait().ifPresent(rs -> {
+            if (rs == ButtonType.OK) {
+                System.out.println("Pressed OK...");
+                setReservationComponents(true);
+            }
+        });
+    }
+
+    @FXML
+    void onClearButtonClicked(ActionEvent event) {
+        clearReservationInfos();
     }
 
     @FXML
@@ -125,6 +169,41 @@ public class MainPageController implements Initializable {
         }
     }
 
+    @FXML
+    void onUnreservedStandsListClicked(MouseEvent event) {
+        selectedStand = unreservedStandsList.getSelectionModel().getSelectedItem();
+        standTotalPrice = selectedStand.getArea() * selectedStand.getExposedSides() * 11.5 * takenDays.size();
+        totalStandPrice.setText(standTotalPrice + " TL");
+    }
+
+    @FXML
+    void onAcceptButtonClick(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        TenantDAO tenantDAO = new TenantDAO();
+        ReservationFormDAO reservationFormDAO = new ReservationFormDAO();
+        ReservedDaysDAO reservedDaysDAO = new ReservedDaysDAO();
+
+        LocalDate currentDate = LocalDate.now();
+        int tenantNumber = tenantDAO.getTenantNumberByTc(tcNumber);
+        int standNumber = selectedStand.getStandNumber();
+        double totalPrice = standTotalPrice;
+
+        reservationFormDAO.saveCurrentReservation(currentDate, tenantNumber, standNumber, totalPrice);
+
+        alert.setTitle("Rezervasyon İşlemi Bilgilendirme");
+        alert.setHeaderText("Rezervasyon işlemi gerçekleştirilmiştir.");
+        alert.showAndWait()
+                .ifPresent(rs -> {
+                   if (rs == ButtonType.OK) {
+                       for (LocalDate date : takenDays) {
+                           int reservationNumber = reservationFormDAO
+                                   .getReservationNumberByTenantAndStandNumber(tenantNumber, standNumber, LocalDate.now());
+                           reservedDaysDAO.saveReservedDays(reservationNumber, date);
+                       }
+                   }
+                });
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -151,5 +230,11 @@ public class MainPageController implements Initializable {
         textFieldSignupLastName.clear();
         textSignupTC.clear();
         textFieldSignupPhoneNumber.clear();
+    }
+
+    private void clearReservationInfos() {
+        datePickerSelectSection.getEditor().clear();
+        datePickerSelectSection.setValue(null);
+        takenDays.clear();
     }
 }

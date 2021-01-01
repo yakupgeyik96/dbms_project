@@ -21,7 +21,7 @@
             <Font name="Arial Bold" size="13.0" />
          </font>
       </Label>
-      <Button fx:id="buttonSelectSection" alignment="CENTER" contentDisplay="CENTER" layoutX="160.0" layoutY="256.0" mnemonicParsing="false" onAction="#onSelectSectionClick" prefHeight="27.0" prefWidth="158.0" style="-fx-background-color: lightBlue;" text="Rezervasyon Sorgula" />
+      <Button fx:id="buttonSelectSection" alignment="CENTER" contentDisplay="CENTER" layoutX="62.0" layoutY="256.0" mnemonicParsing="false" onAction="#onSelectSectionClick" prefHeight="27.0" prefWidth="158.0" style="-fx-background-color: lightBlue;" text="Rezervasyon Sorgula" />
       <Label layoutX="117.0" layoutY="14.0" text="REZERVASYON İŞLEMİ" textFill="#4000ff">
          <font>
             <Font name="Arial Bold" size="18.0" />
@@ -40,13 +40,13 @@
          </font>
       </Label>
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="263.0" layoutY="347.0" prefHeight="39.0" prefWidth="113.0" />
-      <Button alignment="CENTER" layoutX="186.0" layoutY="709.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="105.0" text="ONAYLA">
+      <Button alignment="CENTER" layoutX="186.0" layoutY="709.0" mnemonicParsing="false" onAction="#onAcceptButtonClick" prefHeight="39.0" prefWidth="105.0" text="ONAYLA">
          <font>
             <Font name="Arial" size="14.0" />
          </font>
       </Button>
       <Line endX="100.0" layoutX="423.0" layoutY="6.0" startX="100.0" startY="786.300048828125" />
-      <ListView layoutX="54.0" layoutY="319.0" prefHeight="200.0" prefWidth="419.0" />
+      <ListView fx:id="unreservedStandsList" layoutX="54.0" layoutY="319.0" onMouseClicked="#onUnreservedStandsListClicked" prefHeight="200.0" prefWidth="419.0" />
       <Label layoutX="700.0" layoutY="14.0" text="ÜYELİK İŞLEMİ" textFill="#4000ff">
          <font>
             <Font name="Arial Bold" size="18.0" />
@@ -69,5 +69,11 @@
       </Button>
       <Line endX="269.5" layoutX="253.0" layoutY="160.0" startX="-253.00001525878906" />
       <Line endX="269.5" layoutX="253.0" layoutY="42.0" startX="-253.00001525878906" />
+      <Label fx:id="totalStandPrice" alignment="CENTER" layoutX="265.0" layoutY="567.0" prefHeight="57.0" prefWidth="135.0">
+         <font>
+            <Font name="Arial Bold" size="28.0" />
+         </font>
+      </Label>
+      <Button alignment="CENTER" layoutX="321.0" layoutY="256.0" mnemonicParsing="false" onAction="#onClearButtonClicked" prefHeight="27.0" prefWidth="124.0" text="Temizle" textAlignment="CENTER" />
    </children>
 </Pane>

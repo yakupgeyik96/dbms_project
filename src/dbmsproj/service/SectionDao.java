@@ -72,8 +72,10 @@ public class SectionDao {
         return localDates;
     }
 
-    public void getUnreservedStands(String sectionName, LocalDate fromDate, LocalDate toDate) {
+    public List<Stand> getUnreservedStands(String sectionName, LocalDate fromDate, LocalDate toDate) {
         PostgreSqlConnection postgreSqlConnection = PostgreSqlConnection.getInstance();
+        List<Stand> unreservedStands = new ArrayList<>();
+        int sectionNumber = 0;
 
         try (Connection conn = postgreSqlConnection.getConnection();
              Statement stmt = conn.createStatement())
@@ -85,13 +87,44 @@ public class SectionDao {
             prepStatement.setDate(3, Date.valueOf(toDate));
 
             ResultSet rs = prepStatement.executeQuery();
+            sectionNumber = getSectionNumber(sectionName);
 
             while (rs.next()) {
-                System.out.println(rs.getString(2));
+                Stand stand = new Stand();
+                stand.setStandNumber(rs.getInt(1));
+                stand.setArea(rs.getInt(2));
+                stand.setExposedSides(rs.getInt(3));
+                stand.setSectionNo(sectionNumber);
+                unreservedStands.add(stand);
             }
         }
         catch (Exception ex) {
             ex.printStackTrace();
         }
+
+        return unreservedStands;
+    }
+
+    public int getSectionNumber(String sectionName) {
+        PostgreSqlConnection postgreSqlConnection = PostgreSqlConnection.getInstance();
+        int sectionNumber = 0;
+
+        try (Connection conn = postgreSqlConnection.getConnection();
+             Statement stmt = conn.createStatement())
+        {
+            PreparedStatement prepStatement = conn.prepareStatement("SELECT sectionno FROM section WHERE secname=?");
+            prepStatement.setString(1, sectionName);
+
+            ResultSet result = prepStatement.executeQuery();
+
+            while (result.next()) {
+                sectionNumber = result.getInt(1);
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return sectionNumber;
     }
 }
