@@ -164,8 +164,11 @@ public class MainPageController implements Initializable {
 
     @FXML
     void onUnreservedStandsListClicked(MouseEvent event) {
+        SectionDao sectionDao = new SectionDao();
         selectedStand = unreservedStandsList.getSelectionModel().getSelectedItem();
-        standTotalPrice = selectedStand.getArea() * selectedStand.getExposedSides() * 11.5 * takenDays.size();
+        //standTotalPrice = selectedStand.getArea() * selectedStand.getExposedSides() * 11.5 * takenDays.size();
+        standTotalPrice = sectionDao
+                .calculateStandPrice(selectedStand.getArea(), selectedStand.getExposedSides(), 12, 11) * takenDays.size();
         totalStandPrice.setText(standTotalPrice + " TL");
     }
 

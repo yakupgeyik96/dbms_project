@@ -148,4 +148,30 @@ public class SectionDao {
         }
         return sectionName;
     }
+
+    public double calculateStandPrice(float area, int exposedSides, int meterPrice, int sidePrice) {
+        PostgreSqlConnection postgreSqlConnection = PostgreSqlConnection.getInstance();
+        double standPrice = 0;
+
+        try (Connection conn = postgreSqlConnection.getConnection();
+             Statement stmt = conn.createStatement())
+        {
+            String sql = "SELECT * FROM standPrice(?,?,?,?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setFloat(1, area);
+            ps.setInt(2, exposedSides);
+            ps.setInt(3, meterPrice);
+            ps.setInt(4, sidePrice);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                standPrice = rs.getDouble(1);
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return standPrice;
+    }
 }
