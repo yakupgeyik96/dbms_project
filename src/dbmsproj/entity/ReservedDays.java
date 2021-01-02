@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class ReservedDays {
     private int reservationNumber;
-    private LocalDate[] reservedDays;
+    private LocalDate reservedDays;
 
     public ReservedDays() {
     }
@@ -17,11 +17,19 @@ public class ReservedDays {
         this.reservationNumber = reservationNumber;
     }
 
-    public LocalDate[] getReservedDays() {
+    public LocalDate getReservedDays() {
         return reservedDays;
     }
 
-    public void setReservedDays(LocalDate[] reservedDays) {
+    public void setReservedDays(LocalDate reservedDays) {
         this.reservedDays = reservedDays;
+    }
+
+    @Override
+    public String toString() {
+        return "ReservedDays{" +
+                "reservationNumber=" + reservationNumber +
+                ", reservedDays=" + reservedDays +
+                '}';
     }
 }

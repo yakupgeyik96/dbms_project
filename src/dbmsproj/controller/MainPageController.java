@@ -1,6 +1,7 @@
 package dbmsproj.controller;
 
 import dbmsproj.entity.ReservationForm;
+import dbmsproj.entity.ReservedDays;
 import dbmsproj.entity.Stand;
 import dbmsproj.service.ReservationFormDAO;
 import dbmsproj.service.ReservedDaysDAO;
@@ -55,6 +56,18 @@ public class MainPageController implements Initializable {
     private Label totalStandPrice;
 
     @FXML
+    private ListView<ReservationForm> allReservationListOfTenant;
+
+    @FXML
+    private ListView<ReservedDays> listViewOfReservedDays;
+
+    @FXML
+    private Label labelUpdateSectionName;
+
+    @FXML
+    private DatePicker datePickerUpdate;
+
+    @FXML
     void onSelectSectionClick(ActionEvent event) {
         SectionDao sectionDao = new SectionDao();
         List<Stand> unreservedStands = new ArrayList<>();
@@ -65,29 +78,8 @@ public class MainPageController implements Initializable {
                 takenDays.get(takenDays.size() - 1)
         );
 
-
         ObservableList<Stand> stands = FXCollections.observableArrayList(unreservedStands);
-
         unreservedStandsList.setItems(stands);
-
-        /*ArrayList<LocalDate> localDates =
-                (ArrayList<LocalDate>) sectionDao.getSectionReservedDays(comboBoxSelectSection.getValue());
-
-        for (LocalDate localDate : localDates) {
-            System.out.println("---> " + localDate);
-        }*/
-
-//        LocalDate[] localDates = new LocalDate[takenDays.size()];
-//
-//        for (int i = 0; i < takenDays.size(); i++) {
-//            localDates[i] = takenDays.get(i);
-//        }
-//
-//        String section = comboBoxSelectSection.getValue();
-//
-//        System.out.println("Section: " + section);
-//        System.out.println("Dates: " + Arrays.toString(localDates));
-        System.out.println(takenDays.size());
     }
 
     @FXML
@@ -116,6 +108,7 @@ public class MainPageController implements Initializable {
         for(String tcNumber : tcNumbers) {
             if(tcNumber.equals(textFieldTC.getText())) {
                 setReservationComponents(false);
+                fillReservationList();
                 return;
             }
         }
@@ -202,6 +195,50 @@ public class MainPageController implements Initializable {
                        }
                    }
                 });
+
+        fillReservationList();
+    }
+
+    @FXML
+    public void onDeleteButtonClick(ActionEvent event) {
+        ReservationForm reservationForm = allReservationListOfTenant.getSelectionModel().getSelectedItem();
+        ReservationFormDAO reservationFormDAO = new ReservationFormDAO();
+        boolean result = reservationFormDAO.deleteByReservationNumber(reservationForm.getReservationNumber());
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        if(result) {
+            alert.setTitle("Silme İşlemi");
+            alert.setHeaderText("Silme işlemi gerçekleştirilmiştir.");
+            alert.showAndWait().ifPresent(rs -> {
+                if (rs == ButtonType.OK) {
+                    fillReservationList();
+                }
+            });
+        } else {
+            alert.setTitle("Silme İşlemi");
+            alert.setHeaderText("Silme işlemi başarısız.");
+            alert.showAndWait().ifPresent(rs -> {
+                if (rs == ButtonType.OK) {
+                    fillReservationList();
+                }
+            });
+        }
+    }
+
+    @FXML
+    void onUpdateButtonClick(ActionEvent event) {
+        ReservedDaysDAO reservedDaysDAO = new ReservedDaysDAO();
+        ReservationFormDAO reservationFormDAO = new ReservationFormDAO();
+
+        LocalDate newDate = datePickerUpdate.getValue();
+        LocalDate oldDate = listViewOfReservedDays
+                .getSelectionModel().getSelectedItem().getReservedDays();
+        int reservationNumber = listViewOfReservedDays
+                .getSelectionModel().getSelectedItem().getReservationNumber();
+
+        reservedDaysDAO.updateReservedDays(reservationNumber, oldDate, newDate);
+        reservationFormDAO.updateDateOfMadeByReservationNumber(reservationNumber, LocalDate.now());
+        fillReservedDaysList();
     }
 
     @Override
@@ -210,6 +247,29 @@ public class MainPageController implements Initializable {
         takenDays = new ArrayList<>();
         setReservationComponents(true);
         getSections(); // get sections and set combobox values
+
+        allReservationListOfTenant.setOnMouseClicked(click -> {
+            if (click.getClickCount() == 2) {
+                fillReservedDaysList();
+            }
+        });
+    }
+
+    private void fillReservedDaysList() {
+        ReservedDaysDAO reservedDaysDAO = new ReservedDaysDAO();
+        List<ReservedDays> reservedDays;
+        ObservableList<ReservedDays> listOfReservedDays;
+        ReservationForm reservationForm = allReservationListOfTenant.getSelectionModel().getSelectedItem();
+        reservedDays = reservedDaysDAO.getReservedDaysByReservationNumber(reservationForm.getReservationNumber());
+        listOfReservedDays = FXCollections.observableList(reservedDays);
+        listViewOfReservedDays.setItems(listOfReservedDays);
+        setSectionName(reservationForm.getStandNumber());
+    }
+
+    private void setSectionName(int standNumber) {
+        SectionDao sectionDao = new SectionDao();
+        String sectionName = sectionDao.getSectionNameByStandNumber(standNumber);
+        labelUpdateSectionName.setText(sectionName);
     }
 
     private void setReservationComponents(boolean status) {
@@ -236,5 +296,15 @@ public class MainPageController implements Initializable {
         datePickerSelectSection.getEditor().clear();
         datePickerSelectSection.setValue(null);
         takenDays.clear();
+    }
+
+    private void fillReservationList() {
+        ReservationFormDAO reservationFormDAO = new ReservationFormDAO();
+        TenantDAO tenantDAO = new TenantDAO();
+        int tenantNumber = tenantDAO.getTenantNumberByTc(textFieldTC.getText());
+        List<ReservationForm> reservations =
+                reservationFormDAO.getReservationFormsByTenantNumber(tenantNumber);
+        ObservableList<ReservationForm> allReservations = FXCollections.observableList(reservations);
+        allReservationListOfTenant.setItems(allReservations);
     }
 }

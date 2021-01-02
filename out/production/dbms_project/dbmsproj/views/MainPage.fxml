@@ -12,17 +12,17 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbmsproj.controller.MainPageController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1700.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbmsproj.controller.MainPageController">
    <children>
       <ComboBox fx:id="comboBoxSelectSection" layoutX="58.0" layoutY="211.0" prefHeight="16.0" prefWidth="167.0" />
       <DatePicker fx:id="datePickerSelectSection" layoutX="264.0" layoutY="211.0" onAction="#onDateAction" prefHeight="16.0" prefWidth="180.0" />
-      <Label layoutX="171.0" layoutY="170.0" text="Bölge ve Tarih Seçimi" textAlignment="CENTER">
+      <Label layoutX="197.0" layoutY="169.0" text="Bölge ve Tarih Seçimi" textAlignment="CENTER">
          <font>
             <Font name="Arial Bold" size="13.0" />
          </font>
       </Label>
       <Button fx:id="buttonSelectSection" alignment="CENTER" contentDisplay="CENTER" layoutX="62.0" layoutY="256.0" mnemonicParsing="false" onAction="#onSelectSectionClick" prefHeight="27.0" prefWidth="158.0" style="-fx-background-color: lightBlue;" text="Rezervasyon Sorgula" />
-      <Label layoutX="117.0" layoutY="14.0" text="REZERVASYON İŞLEMİ" textFill="#4000ff">
+      <Label layoutX="164.0" layoutY="14.0" text="REZERVASYON İŞLEMİ" textFill="#4000ff">
          <font>
             <Font name="Arial Bold" size="18.0" />
          </font>
@@ -47,12 +47,12 @@
       </Button>
       <Line endX="100.0" layoutX="423.0" layoutY="6.0" startX="100.0" startY="786.300048828125" />
       <ListView fx:id="unreservedStandsList" layoutX="54.0" layoutY="319.0" onMouseClicked="#onUnreservedStandsListClicked" prefHeight="200.0" prefWidth="419.0" />
-      <Label layoutX="700.0" layoutY="14.0" text="ÜYELİK İŞLEMİ" textFill="#4000ff">
+      <Label layoutX="797.0" layoutY="14.0" text="ÜYELİK İŞLEMİ" textFill="#4000ff">
          <font>
             <Font name="Arial Bold" size="18.0" />
          </font>
       </Label>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="200.0" layoutX="537.0" layoutY="48.0" stroke="BLACK" strokeType="INSIDE" width="651.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="200.0" layoutX="537.0" layoutY="56.0" stroke="BLACK" strokeType="INSIDE" width="651.0" />
       <Label alignment="CENTER" layoutX="559.0" layoutY="127.0" prefHeight="21.0" prefWidth="60.0" text="TC No:" />
       <Text layoutX="624.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="131.009765625" />
       <TextField fx:id="textSignupTC" layoutX="628.0" layoutY="125.0" prefHeight="27.0" prefWidth="167.0" />
@@ -62,18 +62,47 @@
       <TextField fx:id="textFieldSignupLastName" layoutX="932.0" layoutY="83.0" prefHeight="27.0" prefWidth="167.0" />
       <Label alignment="CENTER" layoutX="863.0" layoutY="127.0" prefHeight="21.0" prefWidth="60.0" text="Tel No:" />
       <TextField fx:id="textFieldSignupPhoneNumber" layoutX="932.0" layoutY="125.0" prefHeight="27.0" prefWidth="167.0" />
-      <Button alignment="CENTER" contentDisplay="CENTER" layoutX="1060.0" layoutY="206.0" mnemonicParsing="false" onAction="#signupButtonClicked" prefHeight="27.0" prefWidth="77.0" text="Üye Ol">
+      <Button alignment="CENTER" contentDisplay="CENTER" layoutX="825.0" layoutY="206.0" mnemonicParsing="false" onAction="#signupButtonClicked" prefHeight="27.0" prefWidth="77.0" text="Üye Ol">
          <font>
             <Font name="Arial Bold" size="14.0" />
          </font>
       </Button>
-      <Line endX="269.5" layoutX="253.0" layoutY="160.0" startX="-253.00001525878906" />
-      <Line endX="269.5" layoutX="253.0" layoutY="42.0" startX="-253.00001525878906" />
+      <Line endX="1447.0001220703125" endY="-7.62939453125E-6" layoutX="253.0" layoutY="42.0" startX="-253.00001525878906" />
       <Label fx:id="totalStandPrice" alignment="CENTER" layoutX="265.0" layoutY="567.0" prefHeight="57.0" prefWidth="135.0">
          <font>
             <Font name="Arial Bold" size="28.0" />
          </font>
       </Label>
       <Button alignment="CENTER" layoutX="321.0" layoutY="256.0" mnemonicParsing="false" onAction="#onClearButtonClicked" prefHeight="27.0" prefWidth="124.0" text="Temizle" textAlignment="CENTER" />
+      <ListView fx:id="allReservationListOfTenant" layoutX="537.0" layoutY="367.0" prefHeight="200.0" prefWidth="651.0" />
+      <Label alignment="CENTER" layoutX="704.0" layoutY="300.0" prefHeight="39.0" prefWidth="318.0" text="ÖNCEKİ REZERVASYONLAR" textFill="#1500ff">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Button alignment="CENTER" layoutX="1512.0" layoutY="453.0" mnemonicParsing="false" onAction="#onUpdateButtonClick" prefHeight="39.0" prefWidth="105.0" text="Güncelle">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button alignment="CENTER" layoutX="823.0" layoutY="600.0" mnemonicParsing="false" onAction="#onDeleteButtonClick" prefHeight="39.0" prefWidth="105.0" text="Sil">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Line endX="100.0" layoutX="1098.0" layoutY="5.0" startX="100.0" startY="786.300048828125" />
+      <Label layoutX="1367.0" layoutY="13.0" text="GÜNCELLEME İŞLEMİ" textFill="#4000ff">
+         <font>
+            <Font name="Arial Bold" size="18.0" />
+         </font>
+      </Label>
+      <ListView fx:id="listViewOfReservedDays" layoutX="1214.0" layoutY="200.0" prefHeight="200.0" prefWidth="465.0" />
+      <Label alignment="CENTER" layoutX="1391.0" layoutY="69.0" prefHeight="33.0" prefWidth="60.0" text="Bölge:" />
+      <Label fx:id="labelUpdateSectionName" alignment="CENTER" layoutX="1479.0" layoutY="69.0" prefHeight="33.0" prefWidth="67.0" text="X" />
+      <Label alignment="CENTER" layoutX="1352.0" layoutY="151.0" prefHeight="33.0" prefWidth="191.0" text="Rezervasyon Tarihleri">
+         <font>
+            <Font name="Arial Black" size="14.0" />
+         </font></Label>
+      <DatePicker fx:id="datePickerUpdate" layoutX="1256.0" layoutY="459.0" />
    </children>
 </Pane>

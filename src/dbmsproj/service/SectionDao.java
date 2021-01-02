@@ -127,4 +127,25 @@ public class SectionDao {
 
         return sectionNumber;
     }
+
+    public String getSectionNameByStandNumber(int standNumber) {
+        PostgreSqlConnection postgreSqlConnection = PostgreSqlConnection.getInstance();
+        String sectionName = "";
+
+        try (Connection conn = postgreSqlConnection.getConnection();
+             Statement stmt = conn.createStatement())
+        {
+            String sql = "select secname from section where sectionno=(select sectionno from stand where standno=?)";
+            PreparedStatement prepStatement = conn.prepareStatement(sql);
+            prepStatement.setInt(1, standNumber);
+            ResultSet result = prepStatement.executeQuery();
+            while (result.next()) {
+                sectionName = result.getString("secname");
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return sectionName;
+    }
 }
