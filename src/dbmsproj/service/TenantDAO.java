@@ -38,8 +38,8 @@ public class TenantDAO {
         try (Connection conn = postgreSqlConnection.getConnection();
              Statement stmt = conn.createStatement())
         {
-            String sql = "INSERT INTO tenant(first_name, last_name, tcno, phone_number) "
-                    + "VALUES(?,?,?,?)";
+            String sql = "INSERT INTO tenant(tenantno, first_name, last_name, tcno, phone_number) "
+                    + "VALUES(nextval('tenant_seq'),?,?,?,?)";
 
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, firstName);
@@ -48,7 +48,6 @@ public class TenantDAO {
             preparedStatement.setString(4, phoneNumber);
 
             int i = preparedStatement.executeUpdate();
-            System.out.println("----> " + i);
 
             if(i != 0) return true;
         }
@@ -79,5 +78,27 @@ public class TenantDAO {
         }
 
         return tenantNumber;
+    }
+
+    public int getTotalPriceOfTenant(int tenantNumber) {
+        PostgreSqlConnection postgreSqlConnection = PostgreSqlConnection.getInstance();
+        int totalPrice = 0;
+
+        try (Connection conn = postgreSqlConnection.getConnection();
+             Statement stmt = conn.createStatement())
+        {
+            String sql = "select tenantno, SUM(total_price) from reservation_form where tenantno=? group by tenantno";
+            PreparedStatement prepStatement = conn.prepareStatement(sql);
+            prepStatement.setInt(1, tenantNumber);
+            ResultSet rs = prepStatement.executeQuery();
+            while (rs.next()) {
+                totalPrice = rs.getInt(2);
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return totalPrice;
     }
 }

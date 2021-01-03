@@ -96,6 +96,7 @@ public class ReservationFormDAO {
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setInt(1, reservationNumber);
             int i = preparedStatement.executeUpdate();
+            System.out.println(preparedStatement.getWarnings());
             if (i != 1) return false;
         }
         catch (Exception ex) {

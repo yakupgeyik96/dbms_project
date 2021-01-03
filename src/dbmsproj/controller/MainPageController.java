@@ -24,6 +24,7 @@ public class MainPageController implements Initializable {
     ArrayList<LocalDate> takenDays;
     String tcNumber;
     double standTotalPrice;
+    int standNumberForReserved = 0;
 
     @FXML
     private ComboBox<String> comboBoxSelectSection;
@@ -66,6 +67,9 @@ public class MainPageController implements Initializable {
 
     @FXML
     private DatePicker datePickerUpdate;
+
+    @FXML
+    private Label totalPriceOfTenant;
 
     @FXML
     void onSelectSectionClick(ActionEvent event) {
@@ -239,8 +243,19 @@ public class MainPageController implements Initializable {
         int reservationNumber = listViewOfReservedDays
                 .getSelectionModel().getSelectedItem().getReservationNumber();
 
-        reservedDaysDAO.updateReservedDays(reservationNumber, oldDate, newDate);
-        reservationFormDAO.updateDateOfMadeByReservationNumber(reservationNumber, LocalDate.now());
+        boolean dayStatus = reservedDaysDAO.findDayStatus(newDate, String.valueOf(standNumberForReserved));
+
+        if (!dayStatus) {
+            reservedDaysDAO.updateReservedDays(reservationNumber, oldDate, newDate);
+            reservationFormDAO.updateDateOfMadeByReservationNumber(reservationNumber, LocalDate.now());
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Rezervasyon Bilgilendirme");
+            alert.setHeaderText("Seçtiğiniz gün dolu. Lütfen başka gün seçiniz.");
+            alert.showAndWait();
+        }
+
         fillReservedDaysList();
     }
 
@@ -266,7 +281,8 @@ public class MainPageController implements Initializable {
         reservedDays = reservedDaysDAO.getReservedDaysByReservationNumber(reservationForm.getReservationNumber());
         listOfReservedDays = FXCollections.observableList(reservedDays);
         listViewOfReservedDays.setItems(listOfReservedDays);
-        setSectionName(reservationForm.getStandNumber());
+        standNumberForReserved = reservationForm.getStandNumber();
+        setSectionName(standNumberForReserved);
     }
 
     private void setSectionName(int standNumber) {
@@ -307,7 +323,9 @@ public class MainPageController implements Initializable {
         int tenantNumber = tenantDAO.getTenantNumberByTc(textFieldTC.getText());
         List<ReservationForm> reservations =
                 reservationFormDAO.getReservationFormsByTenantNumber(tenantNumber);
+        int totalPrice = tenantDAO.getTotalPriceOfTenant(tenantNumber);
         ObservableList<ReservationForm> allReservations = FXCollections.observableList(reservations);
         allReservationListOfTenant.setItems(allReservations);
+        totalPriceOfTenant.setText(totalPrice + "TL");
     }
 }

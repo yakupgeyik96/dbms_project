@@ -107,5 +107,15 @@
             <Font name="Arial Black" size="14.0" />
          </font></Label>
       <DatePicker fx:id="datePickerUpdate" layoutX="1256.0" layoutY="459.0" />
+      <Label alignment="CENTER" layoutX="690.0" layoutY="682.0" prefHeight="39.0" prefWidth="158.0" text="TOPLAM TUTAR:">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="totalPriceOfTenant" alignment="CENTER" layoutX="893.0" layoutY="682.0" prefHeight="39.0" prefWidth="105.0">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
    </children>
 </Pane>
